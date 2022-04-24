@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<flow name="schedular2Flow" doc:id="282c184e-f3ef-44ea-aea2-f3e4ac8100a6" >
+		<scheduler doc:name="Scheduler" doc:id="212d6db6-7b9a-4cf2-9d6c-faa9bc33ee14" >
+			<scheduling-strategy >
+				<cron expression="0 " />
+			</scheduling-strategy>
+		</scheduler>
+		<logger level="INFO" doc:name="Logger" doc:id="89bbdc06-fbf8-4130-bd2c-45a1a5b27738" message="east are west"/>
+		<logger level="INFO" doc:name="Logger" doc:id="273cdc26-88a9-40b5-9aa0-71f2d9a0afde" message="haryank is the best"/>
+	</flow>
+</mule>
