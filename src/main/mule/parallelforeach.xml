@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="c6a7dbaf-12e8-4d22-a3c5-a1114f14e0bf" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="parallelforeachFlow" doc:id="9a9e4cc4-1f24-4ed5-ba57-c3f5518a871e" >
+		<http:listener doc:name="Listener" doc:id="da9852db-b5b2-4ef4-8531-9495004217df" config-ref="HTTP_Listener_config" path="/test"/>
+		<ee:transform doc:name="Transform Message" doc:id="a25eba92-b97b-448e-a8f3-de18cc41eff4" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<parallel-foreach doc:name="Parallel For Each" doc:id="a6763ca7-0255-4053-8267-d98e2d7b3ae1">
+			<logger level="INFO" doc:name="Logger" doc:id="6a3423ad-ed15-4edc-9bbd-563ee908fc73" message="#[payload]" />
+			<set-variable value="i am sudi" doc:name="Set Variable" doc:id="86128c52-cc9b-46bf-80f5-c1a6506a293d" variableName="name"/>
+			<ee:transform doc:name="Transform Message" doc:id="2404e69f-aa31-4a70-b75c-deae46229124">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+payload + 10]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</parallel-foreach>
+		<ee:transform doc:name="Transform Message" doc:id="d272a8e4-262b-470c-a5c1-53792268b4f9" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+vars.name]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="1b44a01a-ef6a-41bd-8aa7-1b0579d723c7" message="#[vars.name]"/>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="0e1b1044-5ffb-485f-9d6e-6a9b0d7d3bd4" type="EXPRESSION">
+				<ee:transform doc:name="Transform Message" doc:id="917c445e-cbd3-45e2-875b-c0c50639525b" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	
+	"success": "error".errorMessage.payload."results",
+	"failures": "error".errorMessage.payload."failures"
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+					</ee:variables>
+				</ee:transform>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+</mule>
